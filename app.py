@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request, redirect
 import requests
 import uuid
@@ -86,27 +87,6 @@ def payment_status():
     except Exception as e:
         return f"Error sending mail: {e}"
 
-
-@app.route('/payment_status')
-def payment_status():
-    order_id = request.args.get('order_id')
-
-    # 🔴 Retrieve stored data
-    user_info = order_data.get(order_id)
-
-    if not user_info:
-        return "Invalid order ID or expired data."
-
-    name = user_info['name']
-    email = user_info['email']
-    mobile = user_info['mobile']
-    transaction_id = user_info['transaction_id']
-
-    # ✅ Send email
-    try:
-        msg = Message('Payment Confirmation', sender='shreeshpitambare084@gmail.com', recipients=[email])
-        msg.body = f'Thank you {name} for your payment.\n\nTransaction ID: {transaction_id}\nMobile: {mobile}'
-        mail.send(msg)
-        return render_template('success.html', name=name)
-    except Exception as e:
-        return f"Error sending mail: {e}"
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
