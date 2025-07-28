@@ -9,6 +9,9 @@ from flask_mail import Mail, Message
 
 app = Flask(__name__)
 
+
+gmaill=""
+
 # ============ Mail Config ============
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
@@ -26,6 +29,10 @@ def index():
 # ============ Pay Route ============
 @app.route('/pay', methods=['POST'])
 def pay():
+
+    global gmaill
+    gmaill = request.form['email']
+
     name = request.form['name']
     email = request.form['email']
     mobile = request.form['mobile']
@@ -69,7 +76,7 @@ def pay():
 def payment_status():
     order_id = request.args.get('order_id')
     name = request.args.get('name')
-    email = request.args.get('email')
+    email = gmaill
     mobile = request.args.get('mobile')
     transaction_id = request.args.get('transaction_id')
 
