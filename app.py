@@ -31,14 +31,6 @@ def pay():
     order_id = 'Order' + str(uuid.uuid4())
     transaction_id = str(uuid.uuid4())
 
-    # 🔴 Save user details using order_id
-    order_data[order_id] = {
-        'name': name,
-        'email': email,
-        'mobile': mobile,
-        'transaction_id': transaction_id
-    }
-
     headers = {
         "accept": "application/json",
         "x-api-version": "2022-09-01",
@@ -46,6 +38,12 @@ def pay():
         "x-client-id": "896457b3bd65c4bc202da34a48754698",
         "x-client-secret": "cfsk_ma_prod_58a4944f0018534a39d68c2e96a5337e_ca091af8"
     }
+
+    # Include all info in return_url as query parameters
+    return_url = (
+        f"https://payment-production-a756.up.railway.app/payment_status"
+        f"?order_id={order_id}&name={name}&email={email}&mobile={mobile}&txnid={transaction_id}"
+    )
 
     data = {
         "order_id": order_id,
@@ -58,7 +56,7 @@ def pay():
             "customer_phone": mobile
         },
         "order_meta": {
-            "return_url": f"https://payment-production-a756.up.railway.app/payment_status?order_id={order_id}"
+            "return_url": return_url
         }
     }
 
@@ -69,6 +67,25 @@ def pay():
         return redirect(res_data['payment_link'])
     else:
         return f"Error: {response.text}"
+
+@app.route('/payment_status')
+def payment_status():
+    name = request.args.get('name')
+    email = request.args.get('email')
+    mobile = request.args.get('mobile')
+    transaction_id = request.args.get('txnid')
+
+    if not all([name, email, mobile, transaction_id]):
+        return "Missing payment details. Cannot confirm."
+
+    try:
+        msg = Message('Payment Confirmation', sender='shreeshpitambare084@gmail.com', recipients=[email])
+        msg.body = f'Thank you {name} for your payment.\n\nTransaction ID: {transaction_id}\nMobile: {mobile}'
+        mail.send(msg)
+        return render_template('success.html', name=name)
+    except Exception as e:
+        return f"Error sending mail: {e}"
+
 
 @app.route('/payment_status')
 def payment_status():
@@ -87,7 +104,7 @@ def payment_status():
 
     # ✅ Send email
     try:
-        msg = Message('Payment Confirmation', sender='your_email@gmail.com', recipients=[email])
+        msg = Message('Payment Confirmation', sender='shreeshpitambare084@gmail.com', recipients=[email])
         msg.body = f'Thank you {name} for your payment.\n\nTransaction ID: {transaction_id}\nMobile: {mobile}'
         mail.send(msg)
         return render_template('success.html', name=name)
