@@ -51,8 +51,8 @@ def pay():
             "customer_phone": mobile
         },
         "order_meta": {
-            "return_url": f"https://payment-production-a756.up.railway.app/payment_status?"
-                          f"order_id={order_id}&name={name}&email={email}&mobile={mobile}&transaction_id={transaction_id}"
+        "return_url": f"https://payment-production-56f3.up.railway.app/payment_status?order_id={order_id}"
+            
         }
     }
 
