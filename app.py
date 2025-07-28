@@ -42,7 +42,7 @@ def pay():
 
     # Include all info in return_url as query parameters
     return_url = (
-        f"https://payment-production-a756.up.railway.app/payment_status"
+        f"https://payment-production-a8af.up.railway.app/payment_status"
         f"?order_id={order_id}&name={name}&email={email}&mobile={mobile}&txnid={transaction_id}"
     )
 
